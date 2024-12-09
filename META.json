@@ -1,7 +1,7 @@
 {
-   "abstract" : "It's new $module",
+   "abstract" : "Client of Google BigQuery REST API (v2) only jobs.query",
    "author" : [
-      "yujiorama <yujiorama+github@gmail.com>"
+      "Yuji Okazawa <yujiorama+github@gmail.com>"
    ],
    "dynamic_config" : 0,
    "generated_by" : "Minilla/v3.1.25, CPAN::Meta::Converter version 2.150010",
@@ -72,9 +72,6 @@
       }
    },
    "version" : "0.01",
-   "x_contributors" : [
-      "yujiorama <yujiorama+github@gmail.com>"
-   ],
    "x_serialization_backend" : "JSON::PP version 4.16",
    "x_static_install" : 1
 }

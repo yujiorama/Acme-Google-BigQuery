@@ -347,7 +347,7 @@ __END__
 
 =head1 NAME
 
-Google::BigQuery::Lite - It's new $module
+Google::BigQuery::Lite - Client of Google BigQuery REST API (v2) only jobs.query
 
 =head1 SYNOPSIS
 
@@ -355,11 +355,11 @@ Google::BigQuery::Lite - It's new $module
 
     # create a instance
     my $bq_lite = Google::BigQuery::Lite->new(
-        client_email => $client_email,
+        client_email     => $client_email,
         private_key_file => $private_key_file,
-        project_id => $project_id,
+        project_id       => $project_id,
     );
-    # create a dataset
+    # set  default dataset
     my $dataset_id = 'usa_names';
     $bq_lite->use_dataset($dataset_id);
 
@@ -401,13 +401,68 @@ Google::BigQuery::Lite - It's new $module
 
 =head1 DESCRIPTION
 
-Google::BigQuery::Lite is ...
+L<Google::BigQuery::Lite> は L<Google BigQuery REST API (v2) の jobs.query|https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs/query> に限定したクライアントパッケージを提供します。
+
+L<Google::BigQuery> の C<selectall_arrayref> メソッドの代わりに利用してください。
+
+=head1 INSTALL
+
+  cpanm https://github.com/yujiorama/Google-BigQuery-Lite.git
+
+or
+
+  cpm install https://github.com/yujiorama/Google-BigQuery-Lite.git
+
+=head1 METHODS
 
 =over 4
 
-=item C<< $field_definitions >>
+=item C<< $bq_lite->use_dataset($database_id);  >>
 
-dictionary of B<field name> and B<JSON Schema>.
+インスタンスにデフォルトのデータセットIDを設定します。
+
+=item C<< my $row = $bq_lite->selectrow_arrayref(query => $query, field_definitions => $field_definitions, %args); >>
+
+C<$query>を実行して1行の結果を取得します。
+
+C<%args> に指定する値は C<QueryRequest|https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs/query#QueryRequest> を参照してください。
+
+このメソッドは常に C<maxResults=1> として実行するため、結果が1行を超えることはありません。
+
+C<$field_definitions> は、 C<$query> に指定したGoogle SQLのSELECT句に並べた列と同じ順番に、名前とデータ型を L<JSON Schema|https://json-schema.org/specification> で定義します。
+
+    my $field_definitions = [
+        # id is not null, must be integer
+        { name => 'id', schema => +{
+            type => ['integer'],
+        } },
+        # int_value is not null, must be integer
+        { name => 'int_value', schema => +{
+            type => ['integer'],
+        } },
+        # num_value is not null, must be number, minimum 0.0, maximum 100.0
+        { name => 'num_value', schema => +{
+            type    => ['number'],
+            minimum => 0.0,
+            maximum => 100.0,
+        } },
+        # array_int is nullable array of integer, max items 10
+        { name => 'array_int', schema => +{
+            type     => [ 'array', 'null' ],
+            maxItems => 10,
+            items    => +{
+                type => 'integer',
+            }
+        } },
+    ];
+
+=item C<< my $rows = $bq_lite->selectrall_arrayref(query => $query, field_definitions => $field_definitions, %args); >>
+
+C<$query>を実行してすべての結果を取得します。
+
+C<%args> に指定する値は C<QueryRequest|https://cloud.google.com/bigquery/docs/reference/rest/v2/jobs/query#QueryRequest> を参照してください。
+
+C<$field_definitions> は、 C<$query> に指定したGoogle SQLのSELECT句に並べた列と同じ順番に、名前とデータ型を L<JSON Schema|https://json-schema.org/specification> で定義します。
 
     my $field_definitions = [
         # id is not null, must be integer
@@ -438,14 +493,14 @@ dictionary of B<field name> and B<JSON Schema>.
 
 =head1 LICENSE
 
-Copyright (C) yujiorama.
+Copyright (C) Yuji Okazawa.
 
 This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself.
 
 =head1 AUTHOR
 
-yujiorama E<lt>yujiorama+github@gmail.comE<gt>
+Yuji Okazawa E<lt>yujiorama+github@gmail.comE<gt>
 
 =cut
 
